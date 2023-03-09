@@ -8,6 +8,5 @@ if __name__ == "__main__":
     game = Mayhem()
 
     # Run the game
-    game.run()
 
 
