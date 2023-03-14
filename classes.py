@@ -18,6 +18,7 @@ class Rocket(pygame.sprite.Sprite):
     def __init__(self, pos, player, game):
         super().__init__()
         self.game = game
+        self.player = player
         if player == 0:
             self.image = pygame.image.load("images/rocket2.png")
             self.fire_image = pygame.image.load("images/rocket2_fire.png")
@@ -26,8 +27,8 @@ class Rocket(pygame.sprite.Sprite):
             self.image = pygame.image.load("images/rocket.png")
             self.fire_image = pygame.image.load("images/rocket_fire.png")
             self.controls = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_RCTRL]
-        self.image = pygame.transform.scale(self.image, (40, 70), )
-        self.fire_image = pygame.transform.scale(self.fire_image, (40, 70), )
+        self.image = pygame.transform.scale(self.image, (28, 49), )
+        self.fire_image = pygame.transform.scale(self.fire_image, (28, 49), )
         self.rotation = 0
         self.speedx = 0
         self.speedy = 0
@@ -41,7 +42,10 @@ class Rocket(pygame.sprite.Sprite):
     def shoot(self):
         #bullet = (x, y, speedx, speedy, rotation)
         bullet = [self.x, self.y, BULLET_SPEED * math.sin(math.radians(self.rotation)), BULLET_SPEED * math.cos(math.radians(self.rotation)), self.rotation]
-        self.game.bullets.append(bullet)
+        if self.player == 0:
+            self.game.p0bullets.append(bullet)
+        else:
+            self.game.p1bullets.append(bullet)
 
     def update(self, WIN):
         # Moving
@@ -98,7 +102,8 @@ class Mayhem:
         self.stars = pygame.transform.scale(self.stars, (self.width, self.height))
         self.rocket = pygame.sprite.GroupSingle(Rocket((900, 70), 0, self))
         self.rokcet2 = pygame.sprite.GroupSingle(Rocket((100, 70), 1, self))
-        self.bullets = []
+        self.p0bullets = []
+        self.p1bullets = []
         self.missile = pygame.image.load("images/missile.png")
         self.run()
     
@@ -108,12 +113,34 @@ class Mayhem:
     
     def move_bullets(self):
         #bullet = (x, y, speedx, speedy, rotation)
-        for bullet in self.bullets:
+        for bullet in self.p1bullets:
             bullet[0] -= bullet[2]
             bullet[1] -= bullet[3]
             if self.background.sprite.mask.get_at((bullet[0], bullet[1])):
-                self.bullets.remove(bullet)
-                print("Hit")
+                self.p1bullets.remove(bullet)
+            try: # Error message if bullet is outside mask
+                if self.rocket.sprite.mask.get_at((bullet[0], bullet[1])):
+                    self.p1bullets.remove(bullet)
+                    print("Hit")
+            except:
+                pass
+            
+            # Draw bullet
+            image = self.missile.copy()
+            image = pygame.transform.rotate(image, bullet[4])
+            self.WIN.blit(image, (bullet[0], bullet[1]))
+
+        for bullet in self.p0bullets:
+            bullet[0] -= bullet[2]
+            bullet[1] -= bullet[3]
+            if self.background.sprite.mask.get_at((bullet[0], bullet[1])):
+                self.p0bullets.remove(bullet)
+            try:
+                if self.rokcet2.sprite.mask.get_at((bullet[0], bullet[1])):
+                    self.p0bullets.remove(bullet)
+                    print("Hit")
+            except:
+                pass
             
             # Draw bullet
             image = self.missile.copy()
