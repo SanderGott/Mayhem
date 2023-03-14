@@ -112,13 +112,12 @@ class Mayhem:
             print("Collided")
     
     def move_bullets(self):
-        #bullet = (x, y, speedx, speedy, rotation)
         for bullet in self.p1bullets:
             bullet[0] -= bullet[2]
             bullet[1] -= bullet[3]
             if self.background.sprite.mask.get_at((bullet[0], bullet[1])):
                 self.p1bullets.remove(bullet)
-            try: # Error message if bullet is outside mask
+            try: # Error message if bullet is outside mask boundaries
                 if self.rocket.sprite.mask.get_at((bullet[0], bullet[1])):
                     self.p1bullets.remove(bullet)
                     print("Hit")
