@@ -118,7 +118,7 @@ class Mayhem:
             if self.background.sprite.mask.get_at((bullet[0], bullet[1])):
                 self.p1bullets.remove(bullet)
             try: # Error message if bullet is outside mask boundaries
-                if self.rocket.sprite.mask.get_at((bullet[0], bullet[1])):
+                if self.rocket.sprite.mask.get_at((bullet[0], bullet[1])): # Virker ikke tror jeg
                     self.p1bullets.remove(bullet)
                     print("Hit")
             except:
@@ -135,7 +135,7 @@ class Mayhem:
             if self.background.sprite.mask.get_at((bullet[0], bullet[1])):
                 self.p0bullets.remove(bullet)
             try:
-                if self.rokcet2.sprite.mask.get_at((bullet[0], bullet[1])):
+                if self.rokcet2.sprite.mask.get_at((bullet[0], bullet[1])): # Denne virker ikke tror jeg
                     self.p0bullets.remove(bullet)
                     print("Hit")
             except:
