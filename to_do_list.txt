@@ -1,0 +1,7 @@
+recharge pad
+legg til liv
+score
+
+har collision, men ikkje lagt inn at de restarte når de kollidere og miste liv. står bare collided i terminal
+
+ser at bullet collision ikkje virke med rocket. kanskje d e bedre å gjør bullet om te sprite og bruka spritecollide eller gjør d om til mask
