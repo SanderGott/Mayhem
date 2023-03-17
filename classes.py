@@ -4,10 +4,8 @@ import pygame
 import math
 import time
 
-
-
 class Mayhem:
-    WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+    WIN = pygame.display.set_mode((WIDTH, HEIGHT)) # Creates the window outside the init so that it can be accessed to convert images
     def __init__(self):
         self.fps = FPS
         self.width = WIDTH
@@ -31,6 +29,7 @@ class Mayhem:
             print("Collided")
     
 
+
     def run(self):
         clock = pygame.time.Clock()
         run = True
@@ -48,16 +47,18 @@ class Mayhem:
             rocket_collide = self.check_collision(self.rocket, self.background)
             rocket2_collide = self.check_collision(self.rocket2, self.background)
             if rocket_collide:
-                print("Collided")
+                self.rocket.sprite.health -= 1
+                print("Rocket 1 health: ", self.rocket.sprite.health)
             if rocket2_collide:
-                print("Collided")
+                self.rocket2.sprite.health -= 1
             
             rocket_bullet_collide = pygame.sprite.groupcollide(self.rocket, self.p1bullets, False, True, pygame.sprite.collide_mask)
             rocket2_bullet_collide = pygame.sprite.groupcollide(self.rocket2, self.p0bullets, False, True, pygame.sprite.collide_mask)
             if rocket_bullet_collide:
-                print("rocket 0 hit")
+                self.rocket.sprite.health -= MISSILE_DMG
+                
             if rocket2_bullet_collide:
-                print("rocket 1 hit")
+                self.rocket2.sprite.health -= MISSILE_DMG
             
             pygame.sprite.groupcollide(self.background, self.p0bullets, False, True, pygame.sprite.collide_mask)
             pygame.sprite.groupcollide(self.background, self.p1bullets, False, True, pygame.sprite.collide_mask)
@@ -106,6 +107,7 @@ class Rocket(pygame.sprite.Sprite):
         self.game = game
         self.player = player
         self.fuel = FUEL
+        self.health = HEALTH
         if player == 0:
             self.original_image = Rocket.rocket_img[0]["original"]
             self.original_image_fire = Rocket.rocket_img[0]["fire"]
@@ -127,7 +129,8 @@ class Rocket(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.lastshot = time.time()
         
-    
+
+
     def shoot(self):
         
         missile = Missile((self.x, self.y), self.rotation)
@@ -188,8 +191,4 @@ class Missile(pygame.sprite.Sprite):
         self.x -= self.speedx
         self.y -= self.speedy
         self.rect.center = (self.x, self.y)
-
-
-
-        
 
