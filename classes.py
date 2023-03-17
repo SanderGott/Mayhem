@@ -11,8 +11,6 @@ class Background(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
     
-    def draw(self, WIN):
-        WIN.blit(self.image, (0, 0))
 
 
 class Rocket(pygame.sprite.Sprite):
@@ -21,15 +19,16 @@ class Rocket(pygame.sprite.Sprite):
         self.game = game
         self.player = player
         if player == 0:
-            self.image = pygame.image.load("images/rocket2.png")
-            self.fire_image = pygame.image.load("images/rocket2_fire.png")
+            self.original_image = pygame.transform.scale(pygame.image.load("images/rocket2.png"), (28, 49))
+            self.original_image_fire = pygame.transform.scale(pygame.image.load("images/rocket2_fire.png"), (28, 49))
+            self.image = self.original_image
             self.controls = [pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_SPACE]
         else:
-            self.image = pygame.image.load("images/rocket.png")
-            self.fire_image = pygame.image.load("images/rocket_fire.png")
+            self.original_image = pygame.transform.scale(pygame.image.load("images/rocket.png"), (28,49))
+            self.original_image_fire = pygame.transform.scale(pygame.image.load("images/rocket_fire.png"), (28,49))
+            self.image = self.original_image
             self.controls = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_RCTRL]
-        self.image = pygame.transform.scale(self.image, (28, 49), )
-        self.fire_image = pygame.transform.scale(self.fire_image, (28, 49), )
+
         self.rotation = 0
         self.speedx = 0
         self.speedy = 0
@@ -39,6 +38,7 @@ class Rocket(pygame.sprite.Sprite):
         self.rect.center = pos
         self.mask = pygame.mask.from_surface(self.image)
         self.lastshot = time.time()
+        
     
     def shoot(self):
         #bullet = (x, y, speedx, speedy, rotation)
@@ -59,7 +59,7 @@ class Rocket(pygame.sprite.Sprite):
         self.rect.x = self.x # Converts the float back to int
         self.rect.y = self.y
 
-
+        self.image = self.original_image
         if keys[self.controls[0]]:
             self.rotation += ROTATE_AMOUNT
         if keys[self.controls[1]]:
@@ -67,9 +67,10 @@ class Rocket(pygame.sprite.Sprite):
         if keys[self.controls[2]]:
             self.speedx -= SPEED * math.sin(math.radians(self.rotation))
             self.speedy -= SPEED * math.cos(math.radians(self.rotation))
-            image = self.fire_image.copy() # Copy of image if the rocket is firing
-        else:
-            image = self.image.copy() # Copy of image if the rocket is not firing
+            self.image = self.original_image_fire # Copy of image if the rocket is firing
+        
+        
+        
         if keys[self.controls[3]]:
             if time.time() - self.lastshot > 0.5:
                 self.shoot()
@@ -81,12 +82,10 @@ class Rocket(pygame.sprite.Sprite):
         
         # Drawing
         
-        image = pygame.transform.rotate(image, self.rotation) # Rotates the copy so that the original is not corrupted
-        self.rect = image.get_rect(center=(self.x, self.y)) # Updates the rect to the new rotated image
-        self.mask = pygame.mask.from_surface(image) # Updates the mask to the new rotated image
+        self.image = pygame.transform.rotate(self.image, self.rotation) # Rotates the copy so that the original is not corrupted
+        self.rect = self.image.get_rect(center=(self.x, self.y)) # Updates the rect to the new rotated image
+        self.mask = pygame.mask.from_surface(self.image) # Updates the mask to the new rotated image
         
-        pygame.draw.rect(WIN, (255, 0, 0), self.rect, 2) # Husk å fjern denne
-        WIN.blit(image, self.rect)
         
 
         
@@ -145,7 +144,7 @@ class Mayhem:
             # Draw bullet
             image = self.missile.copy()
             image = pygame.transform.rotate(image, bullet[4])
-            self.WIN.blit(image, (bullet[0], bullet[1]))
+            self.WIN.blit(image, (bullet[0], bullet[1])) # Ikke bruk blit. gjør om bullets til sprites
 
 
     
@@ -164,9 +163,14 @@ class Mayhem:
             self.rokcet2.sprite.update(self.WIN)
             self.check_collision(self.rocket, self.background)
 
+            self.rocket.draw(self.WIN)
+            self.rokcet2.draw(self.WIN)
+
             self.move_bullets()
             pygame.display.update()
             clock.tick(self.fps)
+            print(round(1/(time.time() - lasttime)))
+            lasttime = time.time()
 
             
 

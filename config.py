@@ -1,7 +1,7 @@
 # File containing constants used in the game
 
 WIDTH, HEIGHT = 1000, 1000
-FPS = 60
+FPS = 1000
 BLACK = (0, 0, 0)
 
 ROTATE_AMOUNT = 4
