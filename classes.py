@@ -28,6 +28,21 @@ class Mayhem:
         if pygame.sprite.spritecollide(sprite1.sprite, sprite2, False, pygame.sprite.collide_mask):
             print("Collided")
     
+    def reset(self):
+        self.rocket.sprite.x, self.rocket.sprite.y = R0_START_POS
+        self.rocket.sprite.rotation = 0
+        self.rocket.sprite.fuel = FUEL
+        self.rocket.sprite.health = HEALTH
+        self.rocket.sprite.speedx = 0
+        self.rocket.sprite.speedy = 0
+
+        self.rocket2.sprite.x, self.rocket2.sprite.y = R1_START_POS
+        self.rocket2.sprite.rotation = 0
+        self.rocket2.sprite.fuel = FUEL
+        self.rocket2.sprite.health = HEALTH
+        self.rocket2.sprite.speedx = 0
+        self.rocket2.sprite.speedy = 0
+
 
 
     def run(self):
@@ -75,6 +90,12 @@ class Mayhem:
 
             pygame.display.update()
             clock.tick(self.fps)  
+
+
+
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_r]: # Temp reset button
+                self.reset()
 
         pygame.quit()
         
@@ -129,7 +150,6 @@ class Rocket(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.lastshot = time.time()
         
-
 
     def shoot(self):
         
