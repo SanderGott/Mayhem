@@ -46,6 +46,7 @@ class Mayhem:
 
 
     def run(self):
+        self.reset()
         clock = pygame.time.Clock()
         run = True
         while run:
@@ -212,3 +213,12 @@ class Missile(pygame.sprite.Sprite):
         self.y -= self.speedy
         self.rect.center = (self.x, self.y)
 
+class Platform(pygame.sprite.Sprite):
+    original_image = pygame.image.load("images/platform.png").convert_alpha()
+    def __init__(self, pos):
+        super().__init__()
+        self.image = pygame.transform.rotate(Platform.original_image)
+        self.x, self.y = pos
+        self.rect = self.image.get_rect(center=pos)
+        self.mask = pygame.mask.from_surface(self.image)
+    
