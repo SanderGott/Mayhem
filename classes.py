@@ -3,7 +3,6 @@ from config import *
 import pygame
 import math
 import time
-import sys
 
 class Mayhem:
     pygame.init()
@@ -20,24 +19,16 @@ class Mayhem:
         self.rocket2 = pygame.sprite.GroupSingle(Rocket((100, 70), 1, self))
         self.p0bullets = pygame.sprite.Group()
         self.p1bullets = pygame.sprite.Group()
-
         self.platforms = pygame.sprite.Group()
         self.platforms.add(Platform((794, 895)))
         self.platforms.add(Platform((137, 885)))
-
-
         self.score = [0, 0]
-
-
         self.run()
-    
     def check_collision(self, sprite1, sprite2):
         return pygame.sprite.spritecollide(sprite1.sprite, sprite2, False, pygame.sprite.collide_mask)
-    
     def check_bullet_collision(self, sprite1, sprite2):
         if pygame.sprite.spritecollide(sprite1.sprite, sprite2, False, pygame.sprite.collide_mask):
             print("Collided")
-    
     def reset(self):
         self.rocket.sprite.x, self.rocket.sprite.y = R0_START_POS
         self.rocket.sprite.rotation = 0
@@ -45,14 +36,12 @@ class Mayhem:
         self.rocket.sprite.health = HEALTH
         self.rocket.sprite.speedx = 0
         self.rocket.sprite.speedy = 0
-
         self.rocket2.sprite.x, self.rocket2.sprite.y = R1_START_POS
         self.rocket2.sprite.rotation = 0
         self.rocket2.sprite.fuel = FUEL
         self.rocket2.sprite.health = HEALTH
         self.rocket2.sprite.speedx = 0
         self.rocket2.sprite.speedy = 0
-    
     def draw_stats(self):
         # Draw score
         font = pygame.font.Font("fonts/ARCADECLASSIC.TTF", 30)
@@ -72,16 +61,13 @@ class Mayhem:
         rect2 = pygame.rect.Rect(940, 300 - self.rocket2.sprite.fuel / FUEL * 100, 30, self.rocket2.sprite.fuel / FUEL * 100)
         pygame.draw.rect(self.WIN, (0, 0, 255), rect1)
         pygame.draw.rect(self.WIN, (0, 0, 255), rect2)
-    
-    def draw_winner(self):
+    def draw_winner(self, winner):
         font = pygame.font.Font("fonts/ARCADECLASSIC.TTF", 100)
-        text = font.render(("Player " + str(self.score.index(max(self.score)) + 1) + " wins!"), 1, (255, 255, 255))
+        text = font.render(("Player " + str(winner) + " wins!"), 1, (255, 255, 255))
         self.WIN.blit(text, (WIDTH / 2 - text.get_width() / 2, HEIGHT / 2 - text.get_height() / 2))
         pygame.display.update()
         time.sleep(3)
         self.reset()
-
-
     def run(self):
         self.reset()
         clock = pygame.time.Clock()
@@ -104,7 +90,6 @@ class Mayhem:
                 if self.rocket2.sprite.fuel < FUEL:
                     self.rocket2.sprite.fuel += 5
 
-
             self.WIN.blit(self.stars, (0, 0))
             self.background.draw(self.WIN)
             self.rocket.update()
@@ -124,8 +109,7 @@ class Mayhem:
             rocket_bullet_collide = pygame.sprite.groupcollide(self.rocket, self.p1bullets, False, True, pygame.sprite.collide_mask)
             rocket2_bullet_collide = pygame.sprite.groupcollide(self.rocket2, self.p0bullets, False, True, pygame.sprite.collide_mask)
             if rocket_bullet_collide:
-                self.rocket.sprite.health -= MISSILE_DMG
-                
+                self.rocket.sprite.health -= MISSILE_DMG 
             if rocket2_bullet_collide:
                 self.rocket2.sprite.health -= MISSILE_DMG
             
@@ -145,49 +129,33 @@ class Mayhem:
             if self.rocket2.sprite.x > WIDTH or self.rocket2.sprite.x < 0 or self.rocket2.sprite.y > HEIGHT or self.rocket2.sprite.y < 0:
                 self.rocket2.sprite.health = -1
 
-
             # Resets when a rocket dies
             if self.rocket.sprite.health <= 0:
                 self.score[1] += 1
-                self.draw_winner()
+                self.draw_winner(2)
             if self.rocket2.sprite.health <= 0:
                 self.score[0] += 1
-                self.draw_winner()
-
+                self.draw_winner(1)
 
             self.rocket.draw(self.WIN)
             self.rocket2.draw(self.WIN)
-
             self.p0bullets.draw(self.WIN)
             self.p1bullets.draw(self.WIN)
-
             self.platforms.draw(self.WIN)
             self.draw_stats()
-
             pygame.display.update()
             clock.tick(self.fps)  
-
-
-
             keys = pygame.key.get_pressed()
             if keys[pygame.K_r]: # Temp reset button
                 self.reset()
-
         pygame.quit()
-        
-
-
 class Background(pygame.sprite.Sprite):
     image = pygame.image.load("images/background.png").convert_alpha()
-
     def __init__(self):
         super().__init__()
         self.image = Background.image
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-    
-
-
 class Rocket(pygame.sprite.Sprite):
     rocket_img = {
         0: {
@@ -215,7 +183,6 @@ class Rocket(pygame.sprite.Sprite):
             self.original_image_fire = Rocket.rocket_img[1]["fire"]
             self.image = self.original_image
             self.controls = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_RCTRL]
-
         self.rotation = 0
         self.speedx = 0
         self.speedy = 0
@@ -225,26 +192,20 @@ class Rocket(pygame.sprite.Sprite):
         self.rect.center = pos
         self.mask = pygame.mask.from_surface(self.image)
         self.lastshot = time.time()
-        
-
-    def shoot(self):
-        
+    def shoot(self):    
         missile = Missile((self.x, self.y), self.rotation)
         if self.player == 0:
             self.game.p0bullets.add(missile)
         else:
             self.game.p1bullets.add(missile)
-
     def update(self):
         # Moving
         keys = pygame.key.get_pressed()
         self.speedy += GRAVITY
-
         self.x += self.speedx # Using own x and y since rect x and y can only be integers
         self.y += self.speedy # Gets smoother movement this way
         self.rect.x = self.x # Converts the float back to int
         self.rect.y = self.y
-
         self.image = self.original_image
         if keys[self.controls[0]]:
             self.rotation += ROTATE_AMOUNT
@@ -255,8 +216,7 @@ class Rocket(pygame.sprite.Sprite):
                 self.fuel -= 1
                 self.speedx -= SPEED * math.sin(math.radians(self.rotation))
                 self.speedy -= SPEED * math.cos(math.radians(self.rotation))
-                self.image = self.original_image_fire # Copy of image if the rocket is firing
-        
+                self.image = self.original_image_fire # Copy of image if the rocket is firing        
         if keys[self.controls[3]]:
             if time.time() - self.lastshot > FIRERATE: # Limits firing rate
                 self.shoot()
@@ -264,14 +224,11 @@ class Rocket(pygame.sprite.Sprite):
         if self.rotation > 360:
             self.rotation -= 360
         if self.rotation < 0:
-            self.rotation += 360
-        
+            self.rotation += 360       
         # Drawing
         self.image = pygame.transform.rotate(self.image, self.rotation) # Rotates the copy so that the original is not corrupted
         self.rect = self.image.get_rect(center=(self.x, self.y)) # Updates the rect to the new rotated image
-        self.mask = pygame.mask.from_surface(self.image) # Updates the mask to the new rotated image
-        
-        
+        self.mask = pygame.mask.from_surface(self.image) # Updates the mask to the new rotated image       
 class Missile(pygame.sprite.Sprite):
     original_image = pygame.image.load("images/missile.png").convert_alpha()
     def __init__(self, pos, direction):
@@ -281,13 +238,11 @@ class Missile(pygame.sprite.Sprite):
         self.speedx = BULLET_SPEED * math.sin(math.radians(direction))
         self.speedy = BULLET_SPEED * math.cos(math.radians(direction))
         self.rect = self.image.get_rect(center=pos)
-        self.mask = pygame.mask.from_surface(self.image)
-    
+        self.mask = pygame.mask.from_surface(self.image)  
     def update(self):
         self.x -= self.speedx
         self.y -= self.speedy
         self.rect.center = (self.x, self.y)
-
 class Platform(pygame.sprite.Sprite):
     original_image = pygame.image.load("images/platform.png").convert_alpha()
     def __init__(self, pos):
@@ -296,4 +251,3 @@ class Platform(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(Platform.original_image, (80, 41))
         self.rect = self.image.get_rect(center=pos)
         self.mask = pygame.mask.from_surface(self.image)
-    
