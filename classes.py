@@ -53,27 +53,33 @@ class Mayhem:
         self.rocket2.sprite.speedx = 0
         self.rocket2.sprite.speedy = 0
     
-    def print_score(self):
+    def draw_stats(self):
+        # Draw score
         font = pygame.font.Font("fonts/ARCADECLASSIC.TTF", 30)
         text = font.render(("Player 1       Player 2"), 1, (255, 255, 255))
         text2 = font.render(("Score " + str(self.score[0]) + "       Score " + str(self.score[1])), 1, (255, 255, 255))
         self.WIN.blit(text, (WIDTH - text.get_width() - 5, 120))
         self.WIN.blit(text2, (WIDTH - text2.get_width() - 5, 150))
 
-    def draw_health(self):
-        
+        # Draw health
         rect1 = pygame.rect.Rect(780, 300 - self.rocket.sprite.health / HEALTH * 100, 30, self.rocket.sprite.health / HEALTH * 100)
         rect2 = pygame.rect.Rect(900, 300 - self.rocket2.sprite.health / HEALTH * 100, 30, self.rocket2.sprite.health / HEALTH* 100)
         pygame.draw.rect(self.WIN, (255, 0, 0), rect1)
         pygame.draw.rect(self.WIN, (255, 0, 0), rect2)
-        
 
-    def draw_fuel(self):
+        # Draw fuel
         rect1 = pygame.rect.Rect(820, 300 - self.rocket.sprite.fuel / FUEL * 100, 30, self.rocket.sprite.fuel / FUEL * 100)
         rect2 = pygame.rect.Rect(940, 300 - self.rocket2.sprite.fuel / FUEL * 100, 30, self.rocket2.sprite.fuel / FUEL * 100)
         pygame.draw.rect(self.WIN, (0, 0, 255), rect1)
         pygame.draw.rect(self.WIN, (0, 0, 255), rect2)
-        
+    
+    def draw_winner(self):
+        font = pygame.font.Font("fonts/ARCADECLASSIC.TTF", 100)
+        text = font.render(("Player " + str(self.score.index(max(self.score)) + 1) + " wins!"), 1, (255, 255, 255))
+        self.WIN.blit(text, (WIDTH / 2 - text.get_width() / 2, HEIGHT / 2 - text.get_height() / 2))
+        pygame.display.update()
+        time.sleep(3)
+        self.reset()
 
 
     def run(self):
@@ -111,7 +117,6 @@ class Mayhem:
             rocket2_collide = self.check_collision(self.rocket2, self.background) 
             if rocket_collide:
                 self.rocket.sprite.health -= 1
-                print("Rocket 1 health: ", self.rocket.sprite.health)
             if rocket2_collide:
                 self.rocket2.sprite.health -= 1
             
@@ -133,14 +138,21 @@ class Mayhem:
             if rockets_collide:
                 self.rocket.sprite.health -= 1
                 self.rocket2.sprite.health -= 1 # Loses health when colliding with each other
-            
+
+            # If rocket is outside screen
+            if self.rocket.sprite.x > WIDTH or self.rocket.sprite.x < 0 or self.rocket.sprite.y > HEIGHT or self.rocket.sprite.y < 0:
+                self.rocket.sprite.health = -1
+            if self.rocket2.sprite.x > WIDTH or self.rocket2.sprite.x < 0 or self.rocket2.sprite.y > HEIGHT or self.rocket2.sprite.y < 0:
+                self.rocket2.sprite.health = -1
+
+
             # Resets when a rocket dies
             if self.rocket.sprite.health <= 0:
                 self.score[1] += 1
-                self.reset()
+                self.draw_winner()
             if self.rocket2.sprite.health <= 0:
                 self.score[0] += 1
-                self.reset() 
+                self.draw_winner()
 
 
             self.rocket.draw(self.WIN)
@@ -150,9 +162,7 @@ class Mayhem:
             self.p1bullets.draw(self.WIN)
 
             self.platforms.draw(self.WIN)
-            self.print_score()
-            self.draw_health()
-            self.draw_fuel()
+            self.draw_stats()
 
             pygame.display.update()
             clock.tick(self.fps)  
