@@ -3,6 +3,7 @@ from config import *
 import pygame
 import math
 import time
+import random
 
 class Mayhem:
     pygame.init()
@@ -22,6 +23,7 @@ class Mayhem:
         self.platforms = pygame.sprite.Group()
         self.platforms.add(Platform((794, 895)))
         self.platforms.add(Platform((137, 885)))
+        self.smokegroup = pygame.sprite.Group()
         self.score = [0, 0]
         self.run()
     def check_collision(self, sprite1, sprite2):
@@ -136,6 +138,9 @@ class Mayhem:
             if self.rocket2.sprite.health <= 0:
                 self.score[0] += 1
                 self.draw_winner(1)
+            
+            self.smokegroup.update()
+            self.smokegroup.draw(self.WIN)
 
             self.rocket.draw(self.WIN)
             self.rocket2.draw(self.WIN)
@@ -216,7 +221,11 @@ class Rocket(pygame.sprite.Sprite):
                 self.fuel -= 1
                 self.speedx -= SPEED * math.sin(math.radians(self.rotation))
                 self.speedy -= SPEED * math.cos(math.radians(self.rotation))
-                self.image = self.original_image_fire # Copy of image if the rocket is firing        
+                self.image = self.original_image_fire # Copy of image if the rocket is firing 
+                smoke_pos = (self.x + 14 * math.sin(math.radians(self.rotation)), self.y + 14 * math.cos(math.radians(self.rotation))) 
+                self.game.smokegroup.add(Smoke(smoke_pos))
+
+      
         if keys[self.controls[3]]:
             if time.time() - self.lastshot > FIRERATE: # Limits firing rate
                 self.shoot()
@@ -251,3 +260,19 @@ class Platform(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(Platform.original_image, (80, 41))
         self.rect = self.image.get_rect(center=pos)
         self.mask = pygame.mask.from_surface(self.image)
+class Smoke(pygame.sprite.Sprite):
+    image = pygame.image.load("images/smoke.png").convert_alpha()
+    def __init__(self, pos):
+        super().__init__()
+        self.image = Smoke.image
+        self.x, self.y = pos
+        self.time = time.time() # Time the smoke was created
+        self.rect = self.image.get_rect(center=pos)
+    def update(self):
+        if time.time() - self.time > 0.2: # Removes smoke after time
+            self.kill()
+        else:
+            self.x += random.randint(-2, 2) # Makes the smoke look more realistic
+            self.y -= random.randint(0, 2)
+            self.rect.center = (self.x, self.y) # Updates the rect to the new position
+            
