@@ -28,9 +28,7 @@ class Mayhem:
         self.run()
     def check_collision(self, sprite1, sprite2):
         return pygame.sprite.spritecollide(sprite1.sprite, sprite2, False, pygame.sprite.collide_mask)
-    def check_bullet_collision(self, sprite1, sprite2):
-        if pygame.sprite.spritecollide(sprite1.sprite, sprite2, False, pygame.sprite.collide_mask):
-            print("Collided")
+    
     def reset(self):
         self.rocket.sprite.x, self.rocket.sprite.y = R0_START_POS
         self.rocket.sprite.rotation = 0
@@ -44,6 +42,7 @@ class Mayhem:
         self.rocket2.sprite.health = HEALTH
         self.rocket2.sprite.speedx = 0
         self.rocket2.sprite.speedy = 0
+
     def draw_stats(self):
         # Draw score
         font = pygame.font.Font("fonts/ARCADECLASSIC.TTF", 30)
@@ -70,6 +69,41 @@ class Mayhem:
         pygame.display.update()
         time.sleep(3)
         self.reset()
+    
+    def check_collisions(self):
+        # Rocket collision with background
+        rocket_collide = self.check_collision(self.rocket, self.background)
+        rocket2_collide = self.check_collision(self.rocket2, self.background) 
+        if rocket_collide:
+            self.rocket.sprite.health -= 1
+        if rocket2_collide:
+            self.rocket2.sprite.health -= 1
+        
+        # Rocket collision with bullets
+        rocket_bullet_collide = pygame.sprite.groupcollide(self.rocket, self.p1bullets, False, True, pygame.sprite.collide_mask)
+        rocket2_bullet_collide = pygame.sprite.groupcollide(self.rocket2, self.p0bullets, False, True, pygame.sprite.collide_mask)
+        if rocket_bullet_collide:
+            self.rocket.sprite.health -= MISSILE_DMG 
+        if rocket2_bullet_collide:
+            self.rocket2.sprite.health -= MISSILE_DMG
+        
+        # Bullet collision with background
+        pygame.sprite.groupcollide(self.background, self.p0bullets, False, True, pygame.sprite.collide_mask) 
+        pygame.sprite.groupcollide(self.background, self.p1bullets, False, True, pygame.sprite.collide_mask)
+        
+
+        # Rocket collision with each other
+        rockets_collide = self.check_collision(self.rocket, self.rocket2)
+        if rockets_collide:
+            self.rocket.sprite.health -= 1
+            self.rocket2.sprite.health -= 1 # Loses health when colliding with each other
+
+        # If rocket is outside screen
+        if self.rocket.sprite.x > WIDTH or self.rocket.sprite.x < 0 or self.rocket.sprite.y > HEIGHT or self.rocket.sprite.y < 0:
+            self.rocket.sprite.health = -1
+        if self.rocket2.sprite.x > WIDTH or self.rocket2.sprite.x < 0 or self.rocket2.sprite.y > HEIGHT or self.rocket2.sprite.y < 0:
+            self.rocket2.sprite.health = -1
+
     def run(self):
         self.reset()
         clock = pygame.time.Clock()
@@ -79,7 +113,8 @@ class Mayhem:
                 if event.type == pygame.QUIT:
                     run = False
 
-            platform_collide = self.check_collision(self.rocket, self.platforms) # Rocket collision with platforms
+            # Rocket collision with platforms
+            platform_collide = self.check_collision(self.rocket, self.platforms) 
             platform2_collide = self.check_collision(self.rocket2, self.platforms)
             if platform_collide:
                 self.rocket.sprite.speedy = 0
@@ -98,38 +133,9 @@ class Mayhem:
             self.rocket2.update()
             self.p0bullets.update()
             self.p1bullets.update()
+            self.smokegroup.update()
             
-            # Rocket collision with background
-            rocket_collide = self.check_collision(self.rocket, self.background)
-            rocket2_collide = self.check_collision(self.rocket2, self.background) 
-            if rocket_collide:
-                self.rocket.sprite.health -= 1
-            if rocket2_collide:
-                self.rocket2.sprite.health -= 1
-            
-            # Rocket collision with bullets
-            rocket_bullet_collide = pygame.sprite.groupcollide(self.rocket, self.p1bullets, False, True, pygame.sprite.collide_mask)
-            rocket2_bullet_collide = pygame.sprite.groupcollide(self.rocket2, self.p0bullets, False, True, pygame.sprite.collide_mask)
-            if rocket_bullet_collide:
-                self.rocket.sprite.health -= MISSILE_DMG 
-            if rocket2_bullet_collide:
-                self.rocket2.sprite.health -= MISSILE_DMG
-            
-            # Bullet collision with background
-            pygame.sprite.groupcollide(self.background, self.p0bullets, False, True, pygame.sprite.collide_mask) 
-            pygame.sprite.groupcollide(self.background, self.p1bullets, False, True, pygame.sprite.collide_mask)
-
-            # Rocket collision with each other
-            rockets_collide = pygame.sprite.spritecollide(self.rocket.sprite, self.rocket2, False, pygame.sprite.collide_mask) 
-            if rockets_collide:
-                self.rocket.sprite.health -= 1
-                self.rocket2.sprite.health -= 1 # Loses health when colliding with each other
-
-            # If rocket is outside screen
-            if self.rocket.sprite.x > WIDTH or self.rocket.sprite.x < 0 or self.rocket.sprite.y > HEIGHT or self.rocket.sprite.y < 0:
-                self.rocket.sprite.health = -1
-            if self.rocket2.sprite.x > WIDTH or self.rocket2.sprite.x < 0 or self.rocket2.sprite.y > HEIGHT or self.rocket2.sprite.y < 0:
-                self.rocket2.sprite.health = -1
+            self.check_collisions()
 
             # Resets when a rocket dies
             if self.rocket.sprite.health <= 0:
@@ -139,9 +145,8 @@ class Mayhem:
                 self.score[0] += 1
                 self.draw_winner(1)
             
-            self.smokegroup.update()
+            
             self.smokegroup.draw(self.WIN)
-
             self.rocket.draw(self.WIN)
             self.rocket2.draw(self.WIN)
             self.p0bullets.draw(self.WIN)
@@ -154,6 +159,8 @@ class Mayhem:
             if keys[pygame.K_r]: # Temp reset button
                 self.reset()
         pygame.quit()
+
+
 class Background(pygame.sprite.Sprite):
     image = pygame.image.load("images/background.png").convert_alpha()
     def __init__(self):
@@ -161,6 +168,8 @@ class Background(pygame.sprite.Sprite):
         self.image = Background.image
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
+
+
 class Rocket(pygame.sprite.Sprite):
     rocket_img = {
         0: {
@@ -197,12 +206,14 @@ class Rocket(pygame.sprite.Sprite):
         self.rect.center = pos
         self.mask = pygame.mask.from_surface(self.image)
         self.lastshot = time.time()
+
     def shoot(self):    
         missile = Missile((self.x, self.y), self.rotation)
         if self.player == 0:
             self.game.p0bullets.add(missile)
         else:
             self.game.p1bullets.add(missile)
+
     def update(self):
         # Moving
         keys = pygame.key.get_pressed()
@@ -224,7 +235,6 @@ class Rocket(pygame.sprite.Sprite):
                 self.image = self.original_image_fire # Copy of image if the rocket is firing 
                 smoke_pos = (self.x + 14 * math.sin(math.radians(self.rotation)), self.y + 14 * math.cos(math.radians(self.rotation))) 
                 self.game.smokegroup.add(Smoke(smoke_pos))
-
       
         if keys[self.controls[3]]:
             if time.time() - self.lastshot > FIRERATE: # Limits firing rate
@@ -233,11 +243,14 @@ class Rocket(pygame.sprite.Sprite):
         if self.rotation > 360:
             self.rotation -= 360
         if self.rotation < 0:
-            self.rotation += 360       
-        # Drawing
+            self.rotation += 360   
+
+        # Update image, rect and mask
         self.image = pygame.transform.rotate(self.image, self.rotation) # Rotates the copy so that the original is not corrupted
         self.rect = self.image.get_rect(center=(self.x, self.y)) # Updates the rect to the new rotated image
-        self.mask = pygame.mask.from_surface(self.image) # Updates the mask to the new rotated image       
+        self.mask = pygame.mask.from_surface(self.image) # Updates the mask to the new rotated image 
+
+
 class Missile(pygame.sprite.Sprite):
     original_image = pygame.image.load("images/missile.png").convert_alpha()
     def __init__(self, pos, direction):
@@ -248,10 +261,13 @@ class Missile(pygame.sprite.Sprite):
         self.speedy = BULLET_SPEED * math.cos(math.radians(direction))
         self.rect = self.image.get_rect(center=pos)
         self.mask = pygame.mask.from_surface(self.image)  
+
     def update(self):
         self.x -= self.speedx
         self.y -= self.speedy
         self.rect.center = (self.x, self.y)
+
+
 class Platform(pygame.sprite.Sprite):
     original_image = pygame.image.load("images/platform.png").convert_alpha()
     def __init__(self, pos):
@@ -260,6 +276,8 @@ class Platform(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(Platform.original_image, (80, 41))
         self.rect = self.image.get_rect(center=pos)
         self.mask = pygame.mask.from_surface(self.image)
+
+
 class Smoke(pygame.sprite.Sprite):
     image = pygame.image.load("images/smoke.png").convert_alpha()
     def __init__(self, pos):
@@ -268,10 +286,10 @@ class Smoke(pygame.sprite.Sprite):
         self.x, self.y = pos
         self.time = time.time() # Time the smoke was created
         self.rect = self.image.get_rect(center=pos)
+
     def update(self):
-        if time.time() - self.time > 0.25: # Removes smoke after time
-            self.kill()
-            
+        if time.time() - self.time > SMOKE_DURATION: # Removes smoke after time
+            self.kill()   
         else:
             self.x += random.randint(-2, 2) # Makes the smoke look more realistic
             self.y -= random.randint(0, 2) # Moves the smoke upwards
