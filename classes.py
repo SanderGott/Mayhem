@@ -269,10 +269,11 @@ class Smoke(pygame.sprite.Sprite):
         self.time = time.time() # Time the smoke was created
         self.rect = self.image.get_rect(center=pos)
     def update(self):
-        if time.time() - self.time > 0.2: # Removes smoke after time
+        if time.time() - self.time > 0.25: # Removes smoke after time
             self.kill()
+            
         else:
             self.x += random.randint(-2, 2) # Makes the smoke look more realistic
-            self.y -= random.randint(0, 2)
+            self.y -= random.randint(0, 2) # Moves the smoke upwards
             self.rect.center = (self.x, self.y) # Updates the rect to the new position
             
