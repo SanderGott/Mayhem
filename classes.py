@@ -79,7 +79,7 @@ class Mayhem:
         if rocket2_collide:
             self.rocket2.sprite.health -= 1
         
-        # Rocket collision with bullets
+        # Rocket collision with bullets - bullets are deleted
         rocket_bullet_collide = pygame.sprite.groupcollide(self.rocket, self.p1bullets, False, True, pygame.sprite.collide_mask)
         rocket2_bullet_collide = pygame.sprite.groupcollide(self.rocket2, self.p0bullets, False, True, pygame.sprite.collide_mask)
         if rocket_bullet_collide:
@@ -87,7 +87,7 @@ class Mayhem:
         if rocket2_bullet_collide:
             self.rocket2.sprite.health -= MISSILE_DMG
         
-        # Bullet collision with background
+        # Bullet collision with background - bullets are deleted
         pygame.sprite.groupcollide(self.background, self.p0bullets, False, True, pygame.sprite.collide_mask) 
         pygame.sprite.groupcollide(self.background, self.p1bullets, False, True, pygame.sprite.collide_mask)
         
