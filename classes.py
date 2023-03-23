@@ -119,12 +119,12 @@ class Mayhem:
             platform2_collide = self.check_collision(self.rocket2, self.platforms)
             if platform_collide:
                 self.rocket.sprite.speedy = 0
-                self.rocket.sprite.y = 885 - 45
+                self.rocket.sprite.y = 885 - 43
                 if self.rocket.sprite.fuel < FUEL:
                     self.rocket.sprite.fuel += 5
             if platform2_collide:
                 self.rocket2.sprite.speedy = 0
-                self.rocket2.sprite.y = 885 - 45 # Stops the rocket from falling through the platform
+                self.rocket2.sprite.y = 885 - 43 # Stops the rocket from falling through the platform
                 if self.rocket2.sprite.fuel < FUEL:
                     self.rocket2.sprite.fuel += 5
 
