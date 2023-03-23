@@ -21,7 +21,7 @@ class Mayhem:
         self.p0bullets = pygame.sprite.Group()
         self.p1bullets = pygame.sprite.Group()
         self.platforms = pygame.sprite.Group()
-        self.platforms.add(Platform((794, 895)))
+        self.platforms.add(Platform((794, 885)))
         self.platforms.add(Platform((137, 885)))
         self.smokegroup = pygame.sprite.Group()
         self.score = [0, 0]
@@ -108,6 +108,7 @@ class Mayhem:
         self.reset()
         clock = pygame.time.Clock()
         run = True
+        lasttime = time.time()
         while run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -118,7 +119,7 @@ class Mayhem:
             platform2_collide = self.check_collision(self.rocket2, self.platforms)
             if platform_collide:
                 self.rocket.sprite.speedy = 0
-                self.rocket.sprite.y = 895 - 45
+                self.rocket.sprite.y = 885 - 45
                 if self.rocket.sprite.fuel < FUEL:
                     self.rocket.sprite.fuel += 5
             if platform2_collide:
