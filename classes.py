@@ -108,11 +108,10 @@ class Mayhem:
         self.reset()
         clock = pygame.time.Clock()
         run = True
-        lasttime = time.time()
         while run:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    run = False
+                    run = False 
 
             # Rocket collision with platforms
             platform_collide = self.check_collision(self.rocket, self.platforms) 
@@ -157,7 +156,7 @@ class Mayhem:
             pygame.display.update()
             clock.tick(self.fps)  
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_r]: # Temp reset button
+            if keys[pygame.K_r]: # Reset button
                 self.reset()
         pygame.quit()
 
