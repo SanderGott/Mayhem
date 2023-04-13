@@ -97,7 +97,7 @@ class Mayhem:
         if rockets_collide:
             self.rocket.sprite.health -= 1
             self.rocket2.sprite.health -= 1 # Loses health when colliding with each other
-
+    
         # If rocket is outside screen
         if self.rocket.sprite.x > WIDTH or self.rocket.sprite.x < 0 or self.rocket.sprite.y > HEIGHT or self.rocket.sprite.y < 0:
             self.rocket.sprite.health = -1
@@ -224,11 +224,11 @@ class Rocket(pygame.sprite.Sprite):
         self.rect.x = self.x # Converts the float back to int
         self.rect.y = self.y
         self.image = self.original_image
-        if keys[self.controls[0]]:
+        if keys[self.controls[0]]: # Rotate left
             self.rotation += ROTATE_AMOUNT
-        if keys[self.controls[1]]:
+        if keys[self.controls[1]]: # Rotate right
             self.rotation -= ROTATE_AMOUNT
-        if keys[self.controls[2]]:
+        if keys[self.controls[2]]: ## Thrust key
             if self.fuel > 0: # Only thrust if there is fuel left
                 self.fuel -= 1
                 self.speedx -= SPEED * math.sin(math.radians(self.rotation))
@@ -237,7 +237,7 @@ class Rocket(pygame.sprite.Sprite):
                 smoke_pos = (self.x + 14 * math.sin(math.radians(self.rotation)), self.y + 14 * math.cos(math.radians(self.rotation))) 
                 self.game.smokegroup.add(Smoke(smoke_pos))
       
-        if keys[self.controls[3]]:
+        if keys[self.controls[3]]: # Shoot key
             if time.time() - self.lastshot > FIRERATE: # Limits firing rate
                 self.shoot()
                 self.lastshot = time.time()
