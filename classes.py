@@ -211,12 +211,11 @@ class Background(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
 
-
-"""
-The rocket class represents a player's rocket using the pygame sprite class.
-It stores handles the player's fuel and health.
-"""
 class Rocket(pygame.sprite.Sprite):
+    """
+    The rocket class represents a player's rocket using the pygame sprite class.
+    It stores handles the player's fuel and health.
+    """
     rocket_img = {
         0: {
             "original": pygame.transform.scale(pygame.image.load("images/rocket2.png"), (28, 49)).convert_alpha(),
@@ -228,11 +227,11 @@ class Rocket(pygame.sprite.Sprite):
         }
     }
     
-    """
-    Initializes the rocket class and load the rocket image and controls depending on the player number.
-    Masks are also created for collision detection.
-    """
     def __init__(self, pos, player, game):
+        """
+        Initializes the rocket class and load the rocket image and controls depending on the player number.
+        Masks are also created for collision detection.
+        """
         super().__init__()
         self.game = game
         self.player = player
@@ -257,22 +256,22 @@ class Rocket(pygame.sprite.Sprite):
         self.rect.center = pos
         self.mask = pygame.mask.from_surface(self.image)
         self.__lastshot = time.time()
-
-    """
-    Shoot a missile from the rocket and store the last shot time.
-    """
+        
     def shoot(self):    
+        """
+        Shoot a missile from the rocket and store the last shot time.
+        """
         missile = Missile((self.x, self.y), self.rotation)
         if self.player == 0:
             self.game.p0bullets.add(missile)
         else:
             self.game.p1bullets.add(missile)
         self.__lastshot = time.time()
-        
-    """
-    Update the rocket's position, rotation, fuel, and mask.
-    """
-    def update(self):
+    
+    def update(self):    
+        """
+        Update the rocket's position, rotation, fuel, and mask.
+        """
         # Moving
         keys = pygame.key.get_pressed()
         self.speedy += GRAVITY
