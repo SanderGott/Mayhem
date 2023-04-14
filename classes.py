@@ -5,19 +5,21 @@ import math
 import time
 import random
 
-"""
-Mayhem class. This is the main class that runs the game. 
-"""
+
 class Mayhem:
+    """
+    Mayhem class. This is the main class that runs the game. 
+    """
     pygame.init()
     WIN = pygame.display.set_mode((WIDTH, HEIGHT)) # Creates the window outside the init so that it can be accessed to convert images
     
-    """
-    Init function. This is the function that runs when the class is called. 
-    It initializes all the variables and runs the game loop.
-    """
+    
     
     def __init__(self):
+        """
+        Init function. This is the function that runs when the class is called. 
+        It initializes all the variables and runs the game loop.
+        """
         self.fps = FPS
         self.width = WIDTH
         self.height = HEIGHT
@@ -37,16 +39,18 @@ class Mayhem:
         self.run()
 
 
-    """
-    Check collision function. This function checks if two sprites collide.
-    """
+    
     def check_collision(self, sprite1, sprite2):
+        """
+        Check collision function. This function checks if two sprites collide.
+        """
         return pygame.sprite.spritecollide(sprite1.sprite, sprite2, False, pygame.sprite.collide_mask)
     
-    """
-    Reset method. This method resets the game.
-    """
+    
     def reset(self):
+        """
+        Reset method. This method resets the game.
+        """
         self.rocket.sprite.x, self.rocket.sprite.y = R0_START_POS
         self.rocket.sprite.rotation = 0
         self.rocket.sprite.fuel = FUEL
@@ -60,10 +64,11 @@ class Mayhem:
         self.rocket2.sprite.speedx = 0
         self.rocket2.sprite.speedy = 0
 
-    """
-    Draw stats method. This method draws the stats of the game on the screen.
-    """
+
     def draw_stats(self):
+        """
+        Draw stats method. This method draws the stats of the game on the screen.
+        """
         # Draw score
         font = pygame.font.Font("fonts/ARCADECLASSIC.TTF", 30)
         text = font.render(("Player 1       Player 2"), 1, (255, 255, 255))
@@ -84,10 +89,11 @@ class Mayhem:
         pygame.draw.rect(self.WIN, (0, 0, 255), rect2)
     
     
-    """
-    Draw winner method. This method draws the winner of the game on the screen.
-    """
+    
     def draw_winner(self, winner):
+        """
+        Draw winner method. This method draws the winner of the game on the screen.
+        """
         font = pygame.font.Font("fonts/ARCADECLASSIC.TTF", 100)
         text = font.render(("Player " + str(winner) + " wins!"), 1, (255, 255, 255))
         self.WIN.blit(text, (WIDTH / 2 - text.get_width() / 2, HEIGHT / 2 - text.get_height() / 2))
@@ -95,10 +101,11 @@ class Mayhem:
         time.sleep(3)
         self.reset()
     
-    """
-    Check collisions method. This method checks for collisions between the sprites.
-    """
+    
     def check_collisions(self):
+        """
+        Check collisions method. This method checks for collisions between the sprites.
+        """
         # Rocket collision with background
         rocket_collide = self.check_collision(self.rocket, self.background)
         rocket2_collide = self.check_collision(self.rocket2, self.background) 
@@ -132,10 +139,11 @@ class Mayhem:
         if self.rocket2.sprite.x > WIDTH or self.rocket2.sprite.x < 0 or self.rocket2.sprite.y > HEIGHT or self.rocket2.sprite.y < 0:
             self.rocket2.sprite.health = -1
 
-    """
-    Run method. This method runs the game.
-    """
+    
     def run(self):
+        """
+        Run method. This method runs the game.
+        """
         self.reset()
         clock = pygame.time.Clock()
         run = True
@@ -191,10 +199,11 @@ class Mayhem:
                 self.reset()
         pygame.quit()
 
-"""
-Backround class. This class creates the background.
-"""
+
 class Background(pygame.sprite.Sprite):
+    """
+    Backround class. This class creates the background.
+    """
     image = pygame.image.load("images/background.png").convert_alpha()
     def __init__(self):
         super().__init__()
@@ -298,10 +307,11 @@ class Rocket(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.x, self.y)) # Updates the rect to the new rotated image
         self.mask = pygame.mask.from_surface(self.image) # Updates the mask to the new rotated image 
 
-"""
-Missile class. This class creates the missiles.
-"""
+
 class Missile(pygame.sprite.Sprite):
+    """
+    Missile class. This class creates the missiles.
+    """
     original_image = pygame.image.load("images/missile.png").convert_alpha()
     def __init__(self, pos, direction):
         super().__init__()
@@ -317,10 +327,11 @@ class Missile(pygame.sprite.Sprite):
         self.y -= self.speedy
         self.rect.center = (self.x, self.y)
 
-"""
-Platfor class. This class creates the platforms.
-"""
+
 class Platform(pygame.sprite.Sprite):
+    """
+    Platfor class. This class creates the platforms.
+    """
     original_image = pygame.image.load("images/platform.png").convert_alpha()
     def __init__(self, pos):
         super().__init__()
@@ -329,10 +340,11 @@ class Platform(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.mask = pygame.mask.from_surface(self.image)
 
-"""
-Smoke class. This class creates the smoke.
-"""
+
 class Smoke(pygame.sprite.Sprite):
+    """
+    Smoke class. This class creates the smoke.
+    """
     image = pygame.image.load("images/smoke.png").convert_alpha()
     def __init__(self, pos):
         super().__init__()
@@ -341,10 +353,11 @@ class Smoke(pygame.sprite.Sprite):
         self.time = time.time() # Time the smoke was created
         self.rect = self.image.get_rect(center=pos)
 
-    """
-    Updates the smoke. Moves it upwards and removes it after a certain time.
-    """
+    
     def update(self):
+        """
+        Updates the smoke. Moves it upwards and removes it after a certain time.
+        """
         if time.time() - self.time > SMOKE_DURATION: # Removes smoke after time
             self.kill()   
         else:
