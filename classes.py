@@ -5,6 +5,9 @@ import math
 import time
 import random
 
+"""
+Mayhem 
+"""
 class Mayhem:
     pygame.init()
     WIN = pygame.display.set_mode((WIDTH, HEIGHT)) # Creates the window outside the init so that it can be accessed to convert images
