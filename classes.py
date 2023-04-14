@@ -203,6 +203,10 @@ class Background(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
 
+"""
+The rocket class represents a player's rocket using the pygame sprite class.
+It stores handles the player's fuel and health.
+"""
 class Rocket(pygame.sprite.Sprite):
     rocket_img = {
         0: {
@@ -214,6 +218,11 @@ class Rocket(pygame.sprite.Sprite):
             "fire": pygame.transform.scale(pygame.image.load("images/rocket_fire.png"), (28,49)).convert_alpha()
         }
     }
+    
+    """
+    Initializes the rocket class and load the rocket image and controls depending on the player number.
+    Masks are also created for collision detection.
+    """
     def __init__(self, pos, player, game):
         super().__init__()
         self.game = game
@@ -240,6 +249,9 @@ class Rocket(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.__lastshot = time.time()
 
+    """
+    Shoot a missile from the rocket and store the last shot time.
+    """
     def shoot(self):    
         missile = Missile((self.x, self.y), self.rotation)
         if self.player == 0:
@@ -248,7 +260,9 @@ class Rocket(pygame.sprite.Sprite):
             self.game.p1bullets.add(missile)
         self.__lastshot = time.time()
         
-
+    """
+    Update the rocket's position, rotation, fuel, and mask.
+    """
     def update(self):
         # Moving
         keys = pygame.key.get_pressed()
