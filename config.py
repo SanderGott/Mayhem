@@ -1,4 +1,10 @@
-# File containing constants used in the game
+"""
+Authors: Sander Gottschalksen, Mathias Pedersen
+Date: 14.04.2023
+
+File containing constants used in the game
+"""
+
 
 WIDTH, HEIGHT = 1000, 1000
 FPS = 60

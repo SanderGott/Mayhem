@@ -1,6 +1,8 @@
 """
 Authors: Sander Gottschalksen, Mathias Pedersen
 Date: 14.04.2023
+
+Classes file. Contains all the classes used in the game
 """
 
 
