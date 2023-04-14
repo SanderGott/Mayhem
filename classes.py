@@ -1,9 +1,16 @@
+"""
+Authors: Sander Gottschalksen, Mathias Pedersen
+Date: 14.04.2023
+"""
+
 
 from config import *
 import pygame
 import math
 import time
 import random
+
+
 
 
 class Mayhem:
