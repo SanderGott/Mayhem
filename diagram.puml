@@ -1,0 +1,108 @@
+@startuml
+
+class pygame.sprite.Sprite {
+    -image : Surface
+    -rect : Rect
+    -mask : Mask
+    +update(*args)
+    +draw(Surface)
+}
+
+class Mayhem {
+    -fps : int
+    -width : int
+    -height : int
+    -WIN : Surface
+    -background : GroupSingle
+    -stars : Surface
+    -rocket : GroupSingle
+    -rocket2 : GroupSingle
+    -p0bullets : Group
+    -p1bullets : Group
+    -platforms : Group
+    -smokegroup : Group
+    -score : list[int]
+    +__init__()
+    +check_collision(sprite1: Sprite, sprite2: Sprite) : bool
+    +reset()
+    +draw_stats()
+    +draw_winner(winner: int)
+    +check_collisions()
+    +run()
+}
+
+class Background {
+    -image : Surface
+    -rect : Rect
+    -mask : Mask
+    +__init__()
+}
+
+class Rocket {
+    -player : int
+    -fuel : int
+    -health : int
+    -original_image : Surface
+    -original_image_fire : Surface
+    -controls : list
+    -rotation : int
+    -speedx : float
+    -speedy : float
+    -x : float
+    -y : float
+    -rect : Rect
+    -mask : Mask
+    -lastshot : float
+    +__init__(pos: Tuple[int, int], player: int, game: Mayhem)
+    +shoot()
+    +update()
+}
+
+class Missile {
+    -image : Surface
+    -x : float
+    -y : float
+    -speedx : float
+    -speedy : float
+    -rect : Rect
+    -mask : Mask
+    +__init__(pos: Tuple[int, int], direction: int)
+    +update()
+}
+
+class Platform {
+    -image : Surface
+    -x : int
+    -y : int
+    -rect : Rect
+    -mask : Mask
+    +__init__(pos: Tuple[int, int])
+}
+
+class Smoke {
+    -image : Surface
+    -x : float
+    -y : float
+    -time : float
+    -rect : Rect
+    +__init__(pos: Tuple[int, int])
+    +update()
+}
+
+
+
+Background --|> Sprite
+Rocket --|> Sprite
+Missile --|> Sprite
+Platform --|> Sprite
+Smoke --|> Sprite
+Mayhem --* Background
+Mayhem --* Rocket
+Rocket --* Mayhem
+Mayhem --* Missile
+Mayhem --* Platform
+Mayhem --* Smoke
+
+
+
+@enduml

@@ -205,7 +205,7 @@ class Rocket(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.mask = pygame.mask.from_surface(self.image)
-        self.lastshot = time.time()
+        self.__lastshot = time.time()
 
     def shoot(self):    
         missile = Missile((self.x, self.y), self.rotation)
@@ -213,6 +213,8 @@ class Rocket(pygame.sprite.Sprite):
             self.game.p0bullets.add(missile)
         else:
             self.game.p1bullets.add(missile)
+        self.__lastshot = time.time()
+        
 
     def update(self):
         # Moving
@@ -237,9 +239,8 @@ class Rocket(pygame.sprite.Sprite):
                 self.game.smokegroup.add(Smoke(smoke_pos))
       
         if keys[self.controls[3]]: # Shoot key
-            if time.time() - self.lastshot > FIRERATE: # Limits firing rate
+            if time.time() - self.__lastshot > FIRERATE: # Limits firing rate
                 self.shoot()
-                self.lastshot = time.time()
         if self.rotation > 360:
             self.rotation -= 360
         if self.rotation < 0:
